@@ -1,0 +1,39 @@
+.calendarDay {
+  border: 1px solid #ddd;
+  min-height: 80px;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  background-color: #3490dc; 
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 300ms ease-in-out;
+}
+
+.btn:hover {
+  background-color: #2779bd; 
+}
+
+.inactiveDay {
+  color: #9CA3AF;
+}
+
+@media (min-width: 640px) {
+  .md\:text-base {
+      font-size: 1rem; /* 16px */
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:text-lg {
+      font-size: 1.125rem; /* 18px */
+  }
+}
+
+  
