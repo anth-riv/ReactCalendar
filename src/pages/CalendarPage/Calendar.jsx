@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useSelector } from 'react-redux'; 
 import styles from "./Calendar.module.css";
-import EventForm from "./EventForm";
-import EventList from "./EventList";
+import EventForm from "../../components/EventForm";
+import EventList from "../../components/EventList";
 
 const Calendar = () => {
     // State for current month and year

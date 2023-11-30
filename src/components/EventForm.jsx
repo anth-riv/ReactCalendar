@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addEvent } from '../../features/events/eventsSlice';
+import { addEvent } from '../features/events/eventsSlice';
 
 // eslint-disable-next-line react/prop-types
 const EventForm = ({ setShowEventForm }) => {

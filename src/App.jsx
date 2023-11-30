@@ -1,4 +1,4 @@
-import Calendar from "./components/Calendar/Calendar.jsx";
+import Calendar from "./pages/CalendarPage/Calendar.jsx";
 
 const App = () => {
   return (
