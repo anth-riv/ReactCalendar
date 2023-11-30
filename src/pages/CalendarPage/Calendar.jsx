@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector } from 'react-redux'; 
+import { useNavigate } from 'react-router-dom';
 import styles from "./Calendar.module.css";
 import EventForm from "../../components/EventForm";
 import EventList from "../../components/EventList";
@@ -8,7 +9,7 @@ const Calendar = () => {
     // State for current month and year
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-    const [showEventForm, setShowEventForm] = useState(false); // 
+    const [showEventForm, setShowEventForm] = useState(false); 
 
     const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -40,9 +41,10 @@ const Calendar = () => {
         }
     };
 
+    const navigate = useNavigate();
     // Function to handle 'Add Event' button click
     const handleAddEvent = () => {
-        setShowEventForm(true);
+        navigate('/add-event');
     };
 
     // Fetching events from Redux
@@ -72,7 +74,8 @@ const Calendar = () => {
         }
 
         // Adding days from next month
-        for (let i = 1; i <= daysInMonth; i++) {
+        const remainingCells = 42 - days.length;
+        for (let i = 1; i <= remainingCells; i++) {
             days.push({
                 day: i,
                 isCurrentMonth: false
@@ -89,15 +92,13 @@ const Calendar = () => {
             const dayEvents = events.filter(event => new Date(event.date).toDateString() === new Date(currentYear, currentMonth, dayInfo.day).toDateString());
 
             return (
-                <div key={index} className={dayClassName}>
-                    {dayInfo.day}
-                    <div className="event-list">
-                        {dayEvents.map(event => (
-                            <div key={event.id} className="event-item">
-                                {event.title}
-                            </div>
-                        ))}
-                    </div>
+                <div key={index} className={`${dayClassName} flex flex-col`}>
+                    <div className="date-number text-xs">{dayInfo.day}</div> 
+                    {dayEvents.map(event => (
+                        <div key={event.id} className="event-item mt-auto">
+                            <strong>{event.title}</strong>
+                        </div>
+                    ))}
                 </div>
             );
         });
