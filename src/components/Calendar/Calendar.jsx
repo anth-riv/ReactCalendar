@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useSelector } from 'react-redux'; 
 import styles from "./Calendar.module.css";
+import EventForm from "./EventForm";
+import EventList from "./EventList";
 
 const Calendar = () => {
-    // State for the current month and year
+    // State for current month and year
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [showEventForm, setShowEventForm] = useState(false); // 
 
     const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-    // Get the month name based on currentMonth
     const getMonthName = (monthNumber) => {
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
@@ -17,7 +20,7 @@ const Calendar = () => {
         return monthNames[monthNumber];
     };
 
-    // Handles clicking the 'Previous Month' button
+    // Function to handle 'Previous Month' button click
     const handlePreviousMonth = () => {
         if (currentMonth === 0) {
             setCurrentMonth(11);
@@ -27,7 +30,7 @@ const Calendar = () => {
         }
     };
 
-    // Handles clicking the 'Next Month' button
+    // Function to handle 'Next Month' button click
     const handleNextMonth = () => {
         if (currentMonth === 11) {
             setCurrentMonth(0);
@@ -37,26 +40,30 @@ const Calendar = () => {
         }
     };
 
-    // Renders the individual days in the calendar
+    // Function to handle 'Add Event' button click
+    const handleAddEvent = () => {
+        setShowEventForm(true);
+    };
+
+    // Fetching events from Redux
+    const events = useSelector((state) => state.events.events);
+
+    // Function to render each day in the calendar
     const renderCalendarDays = () => {
         const days = [];
         let firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-        firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Adjust so that 0 corresponds to Monday
+        firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Adjust to make 0 correspond to Monday
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-        const daysInPrevMonth = new Date(currentYear, prevMonth + 1, 0).getDate();
-        const nextMonthDays = 42 - (firstDayOfMonth + daysInMonth); // Adjust 42 for total cells in the grid (6 rows)
-
-        // Add days from the previous month
+        // Adding days from previous month
         for (let i = 0; i < firstDayOfMonth; i++) {
             days.push({
-                day: daysInPrevMonth - firstDayOfMonth + i + 1,
+                day: daysInMonth - firstDayOfMonth + i + 1,
                 isCurrentMonth: false
             });
         }
 
-        // Add days of the current month
+        // Adding days of current month
         for (let i = 1; i <= daysInMonth; i++) {
             days.push({
                 day: i,
@@ -64,28 +71,38 @@ const Calendar = () => {
             });
         }
 
-        // Add days from the next month
-        for (let i = 1; i <= nextMonthDays; i++) {
+        // Adding days from next month
+        for (let i = 1; i <= daysInMonth; i++) {
             days.push({
                 day: i,
                 isCurrentMonth: false
             });
         }
 
-        // Map the days to JSX elements
         return days.map((dayInfo, index) => {
+            // Deciding the CSS class for each day
             const dayClassName = dayInfo.isCurrentMonth
                 ? styles.calendarDay
                 : `${styles.calendarDay} ${styles.inactiveDay}`;
+
+            // Finding events for the current day
+            const dayEvents = events.filter(event => new Date(event.date).toDateString() === new Date(currentYear, currentMonth, dayInfo.day).toDateString());
+
             return (
                 <div key={index} className={dayClassName}>
                     {dayInfo.day}
+                    <div className="event-list">
+                        {dayEvents.map(event => (
+                            <div key={event.id} className="event-item">
+                                {event.title}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             );
         });
     };
 
-    // Renders the calendar header with the current month and year
     const renderCalendarHeader = () => {
         const monthName = getMonthName(currentMonth);
         return (
@@ -94,20 +111,19 @@ const Calendar = () => {
                 <div>
                     <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handlePreviousMonth}>&lt;</button>
                     <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handleNextMonth}>&gt;</button>
+                    <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handleAddEvent}>Add Event</button>
                 </div>
             </div>
         );
     };
 
-      // Renders the weekdays row
-  const renderWeekDays = () => {
-    return weekDays.map((dayName) => (
-      <div key={dayName} className="text-center font-medium p-2">
-        {dayName}
-      </div>
-    ));
-  };
-
+    const renderWeekDays = () => {
+        return weekDays.map((dayName) => (
+            <div key={dayName} className="text-center font-medium p-2">
+                {dayName}
+            </div>
+        ));
+    };
 
     return (
         <div className="container mx-auto mt-10 bg-white rounded-lg shadow-lg overflow-hidden">
@@ -116,10 +132,16 @@ const Calendar = () => {
                 {renderWeekDays()}
                 {renderCalendarDays()}
             </div>
+            <div className="p-4">
+                {showEventForm && <EventForm setShowEventForm={setShowEventForm} />}
+                <EventList />
+            </div>
         </div>
     );
 };
 
 export default Calendar;
+        
+
 
 
