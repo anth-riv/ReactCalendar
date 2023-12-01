@@ -54,6 +54,7 @@ const Calendar = () => {
     // Function to render each day in the calendar
     const renderCalendarDays = () => {
         const days = [];
+        const today = new Date();
         let firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
         firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Adjust to make 0 correspond to Monday
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -84,6 +85,9 @@ const Calendar = () => {
         }
 
         return days.map((dayInfo, index) => {
+            // Check if the day is today
+            const isToday = today.getDate() === dayInfo.day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+
             // Deciding the CSS class for each day
             const dayClassName = dayInfo.isCurrentMonth
                 ? styles.calendarDay
@@ -96,32 +100,34 @@ const Calendar = () => {
                 return eventDate.toDateString() === currentDate.toDateString() && dayInfo.isCurrentMonth;
             });
 
+            // Additional style for highlighting the current day
+            const todayClass = isToday ? "bg-green-200 font-bold" : "";
+
             return (
-                <div key={index} className={`${dayClassName} flex flex-col`}>
-                <div className="date-number text-xs">{dayInfo.day}</div> 
-                {dayEvents.map(event => (
-                  <div key={event.id} 
-                       className="event-item mt-auto flex items-start text-left text-xs bg-blue-100 text-blue-800 rounded px-1 py-1 m-1 overflow-hidden truncate max-w-[95%]"
-                       data-tooltip-id="tooltip-calendar"
-                       data-tooltip-content={event.title}>
-                    <strong>{event.title}</strong>
-                  </div>
-                ))}
-              </div>
+                <div key={index} className={`${dayClassName} flex flex-col ${todayClass}`}>
+                    <div className={`date-number text-xs ${todayClass}`}>{dayInfo.day}</div> 
+                    {dayEvents.map(event => (
+                        <div key={event.id} 
+                             className="event-item mt-auto flex items-start text-left text-xs bg-blue-100 text-blue-800 rounded px-1 py-1 m-1 overflow-hidden truncate max-w-[95%]"
+                             data-tooltip-id="tooltip-calendar"
+                             data-tooltip-content={event.title}>
+                            <strong>{event.title}</strong>
+                        </div>
+                    ))}
+                </div>
             );
-          });
-        };
-      
+        });
+    };
 
     const renderCalendarHeader = () => {
         const monthName = getMonthName(currentMonth);
         return (
             <div className="flex justify-between items-center px-4 py-2 bg-blue-500 text-white">
                 <h2 className="text-lg md:text-xl lg:text-2xl font-bold">{`${monthName} ${currentYear}`}</h2>
-                <div>
-                    <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handlePreviousMonth}>&lt;</button>
-                    <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handleNextMonth}>&gt;</button>
-                    <button className={`${styles.btn} p-1 md:p-2 lg:p-3`} onClick={handleAddEvent}>Add Event</button>
+                <div className="flex space-x-2">
+                    <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onClick={handlePreviousMonth}>&lt;</button>
+                    <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onClick={handleNextMonth}>&gt;</button>
+                    <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onClick={handleAddEvent}>Add Event</button>
                 </div>
             </div>
         );
