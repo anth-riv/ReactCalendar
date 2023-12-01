@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from "./Calendar.module.css";
 import EventForm from "../../components/EventForm";
 import EventList from "../../components/EventList";
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Calendar = () => {
     // State for current month and year
@@ -89,20 +90,28 @@ const Calendar = () => {
                 : `${styles.calendarDay} ${styles.inactiveDay}`;
 
             // Finding events for the current day
-            const dayEvents = events.filter(event => new Date(event.date).toDateString() === new Date(currentYear, currentMonth, dayInfo.day).toDateString());
+            const dayEvents = events.filter(event => {
+                const eventDate = new Date(event.date);
+                const currentDate = new Date(currentYear, currentMonth, dayInfo.day);
+                return eventDate.toDateString() === currentDate.toDateString() && dayInfo.isCurrentMonth;
+            });
 
             return (
                 <div key={index} className={`${dayClassName} flex flex-col`}>
-                    <div className="date-number text-xs">{dayInfo.day}</div> 
-                    {dayEvents.map(event => (
-                        <div key={event.id} className="event-item mt-auto">
-                            <strong>{event.title}</strong>
-                        </div>
-                    ))}
-                </div>
+                <div className="date-number text-xs">{dayInfo.day}</div> 
+                {dayEvents.map(event => (
+                  <div key={event.id} 
+                       className="event-item mt-auto flex items-start text-left text-xs bg-blue-100 text-blue-800 rounded px-1 py-1 m-1 overflow-hidden truncate max-w-[95%]"
+                       data-tooltip-id="tooltip-calendar"
+                       data-tooltip-content={event.title}>
+                    <strong>{event.title}</strong>
+                  </div>
+                ))}
+              </div>
             );
-        });
-    };
+          });
+        };
+      
 
     const renderCalendarHeader = () => {
         const monthName = getMonthName(currentMonth);
@@ -135,6 +144,7 @@ const Calendar = () => {
             </div>
             <div className="p-4">
                 {showEventForm && <EventForm setShowEventForm={setShowEventForm} />}
+                <ReactTooltip id="tooltip-calendar" />
                 <EventList />
             </div>
         </div>
@@ -142,7 +152,3 @@ const Calendar = () => {
 };
 
 export default Calendar;
-        
-
-
-
