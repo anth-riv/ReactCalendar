@@ -86,7 +86,7 @@ const Calendar = () => {
 
         return days.map((dayInfo, index) => {
             // Check if the day is today
-            const isToday = today.getDate() === dayInfo.day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+            const isToday = dayInfo.isCurrentMonth && today.getDate() === dayInfo.day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
             // Deciding the CSS class for each day
             const dayClassName = dayInfo.isCurrentMonth
